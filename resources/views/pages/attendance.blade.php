@@ -10,6 +10,14 @@
             </svg></a></div>
 @endpush
 
+@push('styles')
+        <style>
+            #foto {
+                transform: scaleX(-1);
+            }
+        </style>
+@endpush
+
 @section('content')
     <div class="container">
         <!-- Section Heading-->
@@ -27,7 +35,7 @@
                 @endphp
                 @foreach ($attendances as $item)
                     <a class="list-group-item d-flex align-items-center" href="#">
-                        <img src="{{ asset('webcam/' . $item->foto) }}" alt="User Image"
+                        <img src="{{ asset('webcam/' . $item->foto) }}" alt="User Image" id="foto"
                             style="width:150px;margin-right:20px;">
 
                         <div class="noti-info">
