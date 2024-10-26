@@ -28,4 +28,14 @@ class Permit extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
+
+    public function kadiv()
+    {
+        return $this->belongsTo(User::class, 'approved_by_kadiv', 'id_user');
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'approved_by_manager', 'id_user');
+    }
 }

@@ -128,7 +128,9 @@
         $(document).ready(function() {
             // Set default date to today
             const today = new Date().toISOString().split('T')[0];
-            $('#startDate').val(today);
+            // Mengatur tanggal 1 di bulan ini
+            const firstDayOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+            $('#startDate').val(firstDayOfMonth);
             $('#endDate').val(today);
             $('#filterStatus').val('pending'); // Set default status to "Pending"
 
@@ -165,6 +167,18 @@
                         } else {
                             // Append the new leaves to the list
                             $.each(response, function(index, item) {
+                                let disetujuiOleh = '';
+
+                                // Menggunakan if untuk memeriksa status dan type
+                                if (item.status === 'approved' && item.level === 'staff') {
+                                    disetujuiOleh =
+                                        `<p class="pt-3"><span class="text-success"><i class="bi bi-check2-circle"></i> Disetujui Oleh: ${item.kadiv.member.nama} (${item.kadiv.member.id_member})</span></p>`;
+                                } else if (item.status === 'approved' && item.level === 'kadiv') {
+                                    disetujuiOleh =
+                                        `<p class="pt-3"><span class="text-success"><i class="bi bi-check2-circle"></i> Disetujui Oleh: ${item.manager.member.nama} (${item.manager.member.id_member})</span></p>`;
+                                } 
+
+
                                 $('.list-group').append(`
                             <div class="list-group-item d-flex py-4 mb-2" style="border: 2px solid rgb(76, 75, 75); border-radius:8px;">
                                 <span class="noti-icon me-3 p-3">
@@ -188,6 +202,7 @@
                                                 ${item.time}
                                         </p>
                                         <p class="pt-3"><span>Dibuat pada: ${moment(item.created_at).format('D MMMM YYYY')}</span></p>
+                                        ${disetujuiOleh}
                                     </div>
                                     <a class="btn btn-sm btn-${item.status == 'approved' ? 'success' : item.status == 'rejected' ? 'danger' : 'warning'} text-white text-capitalize" style="margin-left: auto;" data-bs-toggle="modal" data-bs-target="#reasonModal" data-reason="${item.reason}">
                                         ${item.status}

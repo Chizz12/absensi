@@ -187,7 +187,7 @@ class HomeController extends Controller
     {
         if ($request->ajax()) {
             $query = Permit::where('user_id', auth()->user()->id_user)
-                ->with(['user.member', 'user.jabatan', 'user.divisi']);
+                ->with(['user.member', 'user.jabatan', 'user.divisi', 'kadiv.member', 'manager.member']);
 
             // Filter berdasarkan tanggal mulai
             if ($request->filled('from_date')) {
@@ -228,6 +228,14 @@ class HomeController extends Controller
         $permit->end_date = $request->to_date;
         $permit->time = $request->time;
         $permit->reason = $request->description;
+
+        // Kondisi untuk menentukan level berdasarkan jabatan_id
+        if (auth()->user()->jabatan_id >= 2 && auth()->user()->jabatan_id <= 18) {
+            $permit->level = 'kadiv';
+        } else {
+            $permit->level = 'staff';
+        }
+
         $permit->save();
 
         return redirect()->route('permit')->with('info', 'Pengajuan izin berhasil.');

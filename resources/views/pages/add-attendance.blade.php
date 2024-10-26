@@ -299,11 +299,12 @@
                                 var toastEl = document.querySelector('.toast');
                                 var toast = new bootstrap.Toast(toastEl);
                                 toast.show();
+                                $('.overlay').show();
 
                                 // Redirect setelah alert muncul
                                 setTimeout(function() {
                                     window.location.href = response.redirect_url;
-                                }, 5000); // Redirect setelah 5 detik (sesuai delay toast)
+                                }, 2000); // Redirect setelah 2 detik (sesuai delay toast)
                             }
                         },
                         error: function(xhr) {
