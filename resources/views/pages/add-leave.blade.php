@@ -11,15 +11,29 @@
 @endpush
 
 @section('content')
-    <div class="container">
-        <div class="section-heading mt-3">
-            <h5 class="mb-1">Buat Form Cuti</h5>
-            <p class="mb-4">buat permintaan cuti dengan formulir di bawah ini dan kirimkan ke manajer.</p>
+    <div class="container py-5">
+        <div class="text-center">
+            <div class="d-flex justify-content-center align-items-center mb-2">
+                <h2 class="h2 fw-bold text-dark">Form Pengajuan Cuti Tahunan</h2>
+            </div>
+            <p class="text-muted">Silakan isi form di bawah ini untuk mengambil hari cutimu!</p>
         </div>
         <!-- Contact Form-->
         <div class="contact-form mt-3 pb-3">
             <form action="{{ route('post-leave') }}" method="POST">
                 @csrf
+                <div class="form-group">
+                    <h6 class="mb-2">Nama Karyawan :</h6>
+                    <input class="form-control mb-3" name="nama" type="text" readonly
+                        value="{{ Auth::user()->member->nama . ' (' . Auth::user()->member->id_member . ')' }}">
+                </div>
+
+                <div class="form-group">
+                    <h6 class="mb-2">Jabatan dan Divisi :</h6>
+                    <input class="form-control mb-3" name="jabatans" type="text" readonly
+                        value="{{ Auth::user()->jabatan->nama . ' (' . Auth::user()->divisi->nama . ')' }}">
+                </div>
+
                 <div class="form-group">
                     <h6 class="mb-2">Dari Tanggal :</h6>
                     <input class="form-control mb-3" name="from_date" type="date" value="" required="">
@@ -28,16 +42,6 @@
                 <div class="form-group">
                     <h6 class="mb-2">Sampai Tanggal :</h6>
                     <input class="form-control mb-3" name="to_date" type="date" value="" required="">
-                </div>
-
-                <div class="form-group">
-                    <h6 class="mb-2">Nama Karyawan :</h6>
-                    <input class="form-control mb-3" name="nama" type="text" readonly value="{{ Auth::user()->member->nama . ' (' . Auth::user()->member->id_member . ')' }}">
-                </div>
-
-                <div class="form-group">
-                    <h6 class="mb-2">Jabatan dan Divisi :</h6>
-                    <input class="form-control mb-3" name="jabatans" type="text" readonly value="{{ Auth::user()->jabatan->nama . ' (' . Auth::user()->divisi->nama . ')' }}">
                 </div>
 
                 <div class="form-group">

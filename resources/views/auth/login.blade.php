@@ -1,73 +1,61 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Absensi</title>
+    <link rel="stylesheet" href="/assets/css/login.css"> <!-- Ini adalah link ke CSS -->
+</head>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+<body>
+    <section class="container">
+        @if (Route::has('login'))
+            @auth
+                <div class="login-container">
+                    <div class="circle circle-one"></div>
+                    <div class="form-container">
+                        <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png"
+                            alt="illustration" class="illustration" />
+                        <h1 class="opacity">LOGIN</h1>
+                        <form>
+                            <button class="opacity" type="button" id="backHome">Kembali</button>
+                        </form>
 
-                        <div class="row mb-3">
-                            <label for="member_id" class="col-md-4 col-form-label text-md-end">ID Member</label>
-
-                            <div class="col-md-6">
-                                <input id="member_id" type="text" class="form-control @error('member_id') is-invalid @enderror" name="member_id" value="{{ old('member_id') }}" required autocomplete="member_id" autofocus>
-
-                                @error('member_id')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="circle circle-two"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+            @else
+                <div class="login-container">
+                    <div class="circle circle-one"></div>
+                    <div class="form-container">
+                        <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png"
+                            alt="illustration" class="illustration" />
+                        <h1 class="opacity">LOGIN</h1>
+                        <form action="{{ route('login') }}" method="post">
+                            @csrf
+                            <input type="number" placeholder="ID MEMBER" name="member_id" />
+                            <input type="password" placeholder="PASSWORD" name="password" />
+                            <button class="opacity" type="submit">MASUK</button>
+                        </form>
+                        <div class="register-forget opacity">
+                            <a href="#">LUPA PASSWORD</a>
+                        </div>
+                    </div>
+                    <div class="circle circle-two"></div>
+                </div>
+            @endauth
+        @endif
+        <div class="theme-btn-container"></div>
+    </section>
+
+    <!-- Hubungkan file JavaScript eksternal -->
+    <script src="/assets/js/login.js"></script>
+    <script>
+        document.getElementById('backHome').addEventListener('click', function() {
+            window.location.href = '/home';
+        });
+    </script>
+</body>
+
+</html>

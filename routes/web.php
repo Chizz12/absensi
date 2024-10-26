@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -27,3 +27,6 @@ Route::post('/post-attendance', [App\Http\Controllers\HomeController::class, 'po
 Route::get('/leave', [App\Http\Controllers\HomeController::class, 'leave'])->name('leave');
 Route::get('/add-leave', [App\Http\Controllers\HomeController::class, 'addLeave'])->name('add-leave');
 Route::post('/post-leave', [App\Http\Controllers\HomeController::class, 'postLeave'])->name('post-leave');
+Route::get('/permit', [App\Http\Controllers\HomeController::class, 'permit'])->name('permit');
+Route::get('/add-permit', [App\Http\Controllers\HomeController::class, 'addPermit'])->name('add-permit');
+Route::post('/post-permit', [App\Http\Controllers\HomeController::class, 'postPermit'])->name('post-permit');

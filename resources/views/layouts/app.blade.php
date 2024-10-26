@@ -17,9 +17,9 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&amp;display=swap">
     <!-- Favicon-->
-    <link rel="icon" href="/assets/img/koci.png">
+    <link rel="icon" href="/assets/img/logo.png">
     <!-- Apple Touch Icon-->
-    <link rel="apple-touch-icon" href="/assets/img/koci.png">
+    <link rel="apple-touch-icon" href="/assets/img/logo.png">
 
     <!-- CSS Libraries-->
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/css/default/lineicons.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- Stylesheet-->
     <link rel="stylesheet" href="/assets/style.css">
     @stack('styles')
@@ -57,6 +60,7 @@
 
 <body>
     <!-- Preloader-->
+    <div class="overlay" style="display: none;"></div>
 
     <!-- Header Area-->
     <div class="header-area" id="headerArea">
@@ -87,19 +91,19 @@
             <!-- Sidenav Profile-->
             <div class="sidenav-profile">
 
-                <div class="user-profile"><img
-                        src="https://sixghakreasi.com/demos/attd_mobile/assets/foto_user/1024px-User_icon_2_svg.png"
-                        alt="">
+                <div class="user-profile"><img src="{{ asset('assets/img/avatar-profile.png') }}" alt="">
                 </div>
                 <div class="user-info">
-                    <h6 class="user-name mb-0">{{ Auth::user()->member->nama }}</h6>
+                    <h6 class="user-name mb-0">
+                        {{ ucwords(strtoupper(preg_split('/[\s_]+/', Auth::user()->member->nama)[0])) }}{{ ' (' . Auth::user()->member->id_member . ')' }}
+                    </h6>
                 </div>
             </div>
             <!-- Sidenav Nav-->
             <ul class="sidenav-nav ps-0">
-                <li><a href="https://sixghakreasi.com/demos/attd_mobile/profile"><i class="lni lni-user"></i>Profil Ku</a>
+                <li><a href="#"><i class="lni lni-user"></i>Profil Ku</a>
                 </li>
-                <li><a href="https://sixghakreasi.com/demos/attd_mobile/setting"><i class="lni lni-cog"></i>Pengaturan</a>
+                <li><a href="#"><i class="lni lni-cog"></i>Pengaturan</a>
                 </li>
                 <li><a href="{{ route('logout') }}"
                         onclick="event.preventDefault();
@@ -121,20 +125,20 @@
         <div class="toast pwa-install-alert shadow bg-white" role="alert" aria-live="assertive" aria-atomic="true"
             data-bs-delay="5000" data-bs-autohide="true">
             <div class="toast-body">
-                <div class="content d-flex align-items-center mb-2"><img
-                        src="/assets/img/koci.png"
-                        alt="">
+                <div class="content d-flex align-items-center mb-2"><img src="/assets/img/tms.png" alt="">
                     <h6 class="mb-0">INFO</h6>
-                    <button class="btn-close ms-auto" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <button class="btn-close ms-auto" type="button" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
                 </div><span class="mb-0 d-block">{{ session('info') }}</span>
             </div>
         </div>
     @endif
-
     <div class="page-content-wrapper">
         @yield('content')
 
     </div>
+
+    @stack('modals')
 
     @stack('scripts')
 
@@ -157,11 +161,11 @@
         <div class="container h-100 px-0">
             <div class="suha-footer-nav h-100">
                 <ul class="h-100 d-flex align-items-center justify-content-between ps-0">
-                    <li class="active"><a href="https://sixghakreasi.com/demos/attd_mobile/"><i
+                    <li class="active"><a href="{{ route('home') }}"><i
                                 class="lni lni-home"></i>Beranda</a></li>
-                    <li><a href="https://sixghakreasi.com/demos/attd_mobile/setting/get_help"><i
+                    <li><a href="#"><i
                                 class="lni lni-life-ring"></i>Dukungan</a></li>
-                    <li><a href="https://sixghakreasi.com/demos/attd_mobile/setting"><i
+                    <li><a href="#"><i
                                 class="lni lni-cog"></i>Pengaturan</a></li>
                 </ul>
             </div>

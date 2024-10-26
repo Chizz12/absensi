@@ -25,13 +25,27 @@
         }
 
         #selfieVideo {
-            
+
             transform: scaleX(-1);
         }
 
         #map {
             width: 300;
             height: 300px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Warna hitam dengan transparansi */
+            z-index: 1000;
+            /* Pastikan overlay berada di atas semua elemen */
+            display: none;
+            /* Tersembunyi secara default */
         }
     </style>
 @endpush
@@ -41,26 +55,25 @@
         <div class="checkout-wrapper-area py-3">
 
             <div class="shipping-method-choose mb-3">
-                <div class="card shipping-method-choose-title-card bg-primary">
-                    <div class="card-body">
-                        <h6 class="text-center mb-0 text-white">
+                <div class="card shipping-method-choose-title-card bg-white mb-3">
+                    <div class="card-body d-flex flex-wrap justify-content-center align-items-center gap-3">
+                        <button type="button" id="openCam" class="btn btn-warning w-100 w-md-50 open-cam"><i
+                                class="bi bi-camera-fill me-2 fs-5 text-dark"></i>Buka Kamera</button>
 
-                            <button type="button" id="openCam" class="btn btn-warning w-50 open-cam">Buka Kamera</button>
-                        </h6>
                     </div>
                 </div>
                 <div class="card shipping-method-choose-card">
                     <div class="card-body text-center">
-                        <div class="mb-1" id="photoholder"><img
-                                src="https://www.sixghakreasi.com/demos/attd_mobile/assets/mobile/img/product/1869775.png"
-                                alt="Description of the image"></div>
+                        <div class="mb-1" id="photoholder"><img src="{{ asset('assets/img/camera.png') }}"
+                                alt="Take a Picture" class="img-fluid" style="max-width: 50%; height: auto;"
+                                id="img-ilustrator"></div>
                         <canvas class="d-block mb-4" id="canvas" style="display: none;"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="billing-information-card mb-3">
-                <div class="card billing-information-title-card bg-primary">
+                <div class="card billing-information-title-card bg-danger">
                     <div class="card-body">
                         <h6 class="text-center mb-0 text-white">Informasi Lokasi</h6>
                     </div>
@@ -96,7 +109,8 @@
                     <input class="form-control" type="text" id="type" name="type" value="{{ $type }}">
                 </div>
 
-                <button type="button" class="btn btn-warning btn-lg w-100" id="submitBtn">SELESAI</button>
+                <button type="button" class="btn btn-success btn-lg w-100" id="submitBtn"><i
+                        class="bi bi-send-fill fs-5 mr-2"></i> ABSEN</button>
             </form>
         </div>
     </div>
@@ -106,7 +120,6 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="selfieModalLabel">Take a Selfie</h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
                     <video id="selfieVideo" width="100%" height="auto" autoplay="" class="video"></video>
@@ -116,7 +129,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @push('scripts')
@@ -230,6 +242,7 @@
 
         $(document).ready(function() {
             $('#submitBtn').click(function(event) {
+                $('.overlay').show();
 
                 var lat = $('#latitude').val();
                 var lon = $('#longitude').val();
@@ -262,10 +275,40 @@
                         contentType: false, // Agar tidak mengubah tipe konten
                         success: function(response) {
                             if (response.success) {
-                                alert('Data berhasil disimpan.');
+                                $('.overlay').hide();
+
+                                // Tampilkan alert custom
+                                const alertHtml = `
+                                    <div class="toast pwa-install-alert shadow bg-white" role="alert" aria-live="assertive" aria-atomic="true"
+                                        data-bs-delay="5000" data-bs-autohide="true">
+                                        <div class="toast-body">
+                                            <div class="content d-flex align-items-center mb-2">
+                                                <img src="/assets/img/tms.png" alt="">
+                                                <h6 class="mb-0">INFO</h6>
+                                                <button class="btn-close ms-auto" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
+                                            </div>
+                                            <span class="mb-0 d-block">${response.message}</span>
+                                        </div>
+                                    </div>
+                                `;
+
+                                // Masukkan alert ke dalam halaman
+                                $('body').append(alertHtml);
+
+                                // Memperlihatkan toast Bootstrap
+                                var toastEl = document.querySelector('.toast');
+                                var toast = new bootstrap.Toast(toastEl);
+                                toast.show();
+
+                                // Redirect setelah alert muncul
+                                setTimeout(function() {
+                                    window.location.href = response.redirect_url;
+                                }, 5000); // Redirect setelah 5 detik (sesuai delay toast)
                             }
                         },
                         error: function(xhr) {
+                            $('.overlay').hide();
+
 
                             // Cek apakah respons memiliki pesan kesalahan
                             if (xhr.responseJSON && xhr.responseJSON.message) {

@@ -22,23 +22,23 @@
                         <!-- Single Catagory Card-->
                         @foreach ($shifts as $item)
                             <div class="col-md-6 pb-2">
-                                <div class="card" style="width: auto;">
+                                <div class="card shadow-sm border rounded-lg">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ $item->nama }}</h5>
+                                        <h5 class="card-title mb-2 text-capitalize"><i class="bi bi-activity fw-bold fs-5 text-success"></i> {{ $item->nama }}</h5>
                                         <p class="card-text">Maksimal Toleransi
                                             {{ \Carbon\Carbon::parse($item->waktu)->format('H:i') }} WIB</p>
                                         <div class="dropdown">
-                                            <a class="btn btn-primary dropdown-toggle" href="#" role="button"
+                                            <a class="btn btn-danger dropdown-toggle w-100" href="#" role="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 Absen Sekarang
                                             </a>
 
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item text-success"
-                                                        href="{{ route('add-attendance', [$item->id_shift, 'in']) }}">Masuk</a>
+                                                        href="{{ route('add-attendance', [$item->id_shift, 'in']) }}"><i class="bi bi-box-arrow-right text-success me-2"></i>Masuk</a>
                                                 </li>
                                                 <li><a class="dropdown-item text-warning"
-                                                        href="{{ route('add-attendance', [$item->id_shift, 'out']) }}">Keluar</a>
+                                                        href="{{ route('add-attendance', [$item->id_shift, 'out']) }}"><i class="bi bi-box-arrow-left text-danger me-2"></i>Keluar</a>
                                                 </li>
                                             </ul>
                                         </div>

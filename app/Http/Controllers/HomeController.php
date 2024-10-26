@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Absen;
 use App\Models\Leave;
+use App\Models\Permit;
 use App\Models\Shift;
 use Illuminate\Http\Request;
 use Psy\Readline\Hoa\Console;
@@ -127,23 +128,42 @@ class HomeController extends Controller
         $absen->status = $status;
         $absen->save();
 
-        return response()->json(['success' => 'Absen berhasil.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Absen berhasil.',
+            'redirect_url' => route('attendance') // Mengirim URL untuk redirect
+        ]);
     }
 
-    public function leave()
+    public function leave(Request $request)
     {
-        $leaves = Leave::where('user_id', auth()->user()->id_user)
-            ->orderBy('created_at', 'desc')
-            ->whereNotIn('status', ['pending'])
-            ->take(10)
-            ->get();
+        if ($request->ajax()) {
+            $query = Leave::where('user_id', auth()->user()->id_user)
+                ->with(['user.member', 'user.jabatan', 'user.divisi']);
 
-        $pendingLeaves = Leave::where('user_id', auth()->user()->id_user)
-            ->where('status', 'pending')
-            ->take(10)
-            ->get();
+            // Filter berdasarkan tanggal mulai
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', \Carbon\Carbon::parse($request->from_date)->format('Y-m-d'));
+            }
 
-        return view('pages.leave', compact('leaves', 'pendingLeaves'));
+            // Filter berdasarkan tanggal akhir
+            if ($request->filled('to_date')) {
+                $query->whereDate('created_at', '<=', \Carbon\Carbon::parse($request->to_date)->format('Y-m-d 23:59:59'));
+            }
+
+            // Filter berdasarkan status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            // Ambil data leaves sesuai filter yang diterapkan
+            $leaves = $query->orderBy('created_at', 'desc')->take(10)->get();
+
+            // Kembalikan data sebagai JSON
+            return response()->json($leaves);
+        }
+
+        return view('pages.leave');
     }
 
     public function addLeave()
@@ -160,6 +180,56 @@ class HomeController extends Controller
         $leave->reason = $request->description;
         $leave->save();
 
-        return redirect()->route('leave')->with('success', 'Pengajuan cuti berhasil.');
+        return redirect()->route('leave')->with('info', 'Pengajuan cuti berhasil.');
+    }
+
+    public function permit(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = Permit::where('user_id', auth()->user()->id_user)
+                ->with(['user.member', 'user.jabatan', 'user.divisi']);
+
+            // Filter berdasarkan tanggal mulai
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', \Carbon\Carbon::parse($request->from_date)->format('Y-m-d'));
+            }
+
+            // Filter berdasarkan tanggal akhir
+            if ($request->filled('to_date')) {
+                $query->whereDate('created_at', '<=', \Carbon\Carbon::parse($request->to_date)->format('Y-m-d 23:59:59'));
+            }
+
+            // Filter berdasarkan status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            // Ambil data leaves sesuai filter yang diterapkan
+            $permits = $query->orderBy('created_at', 'desc')->take(10)->get();
+
+            // Kembalikan data sebagai JSON
+            return response()->json($permits);
+        }
+
+        return view('pages.permits');
+    }
+
+    public function addPermit()
+    {
+        return view('pages.add-permit');
+    }
+
+    public function postPermit(Request $request)
+    {
+        $permit = new Permit();
+        $permit->user_id = auth()->user()->id_user;
+        $permit->category = $request->category;
+        $permit->start_date = $request->from_date;
+        $permit->end_date = $request->to_date;
+        $permit->time = $request->time;
+        $permit->reason = $request->description;
+        $permit->save();
+
+        return redirect()->route('permit')->with('info', 'Pengajuan izin berhasil.');
     }
 }
