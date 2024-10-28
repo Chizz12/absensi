@@ -231,6 +231,11 @@ class HomeController extends Controller
 
         // Kondisi untuk menentukan level berdasarkan jabatan_id
         if (auth()->user()->jabatan_id >= 2 && auth()->user()->jabatan_id <= 18) {
+            if (auth()->user()->jabatan_id >= 2 && auth()->user()->jabatan_id <= 9) {
+                $permit->approved_by_kadiv = auth()->user()->id_user;
+                $permit->approved_by_manager = auth()->user()->id_user;
+                $permit->status = 'approved';
+            }
             $permit->level = 'kadiv';
         } else {
             $permit->level = 'staff';

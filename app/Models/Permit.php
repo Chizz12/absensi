@@ -21,7 +21,9 @@ class Permit extends Model
         'end_date',
         'time',
         'reason',
-        'status'
+        'status',
+        'approved_by_kadiv',
+        'approved_by_manager'
     ];
 
     public function user()
