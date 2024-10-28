@@ -226,7 +226,8 @@ class HomeController extends Controller
         $permit->category = $request->category;
         $permit->start_date = $request->from_date;
         $permit->end_date = $request->to_date;
-        $permit->time = $request->time;
+        $permit->time_in = $request->time_in;
+        $permit->time_out = $request->time_out;
         $permit->reason = $request->description;
 
         // Kondisi untuk menentukan level berdasarkan jabatan_id

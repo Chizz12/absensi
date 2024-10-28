@@ -126,15 +126,12 @@
         });
 
         $(document).ready(function() {
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            // Mengatur tanggal 1 di bulan ini
+            const today = moment().format('YYYY-MM-DD');
             const firstDayOfMonth = moment().startOf('month').format('YYYY-MM-DD');
             $('#startDate').val(firstDayOfMonth);
             $('#endDate').val(today);
-            $('#filterStatus').val('pending'); // Set default status to "Pending"
+            $('#filterStatus').val('pending');
 
-            // Function to fetch data based on filters
             function fetchLeaves() {
                 const status = $('#filterStatus').val();
                 const from_date = $('#startDate').val();
@@ -151,33 +148,36 @@
                         to_date: to_date
                     },
                     success: function(response) {
-                        // Clear the existing leaves
                         $('.list-group').empty();
-
                         $('.overlay').hide();
 
-                        // Check if there are any leaves
                         if (response.length === 0) {
-                            // Show no data message
                             $('.list-group').append(`
                         <div class="d-flex justify-content-center align-items-center" style="min-height: 300px; flex-direction: column;">
                             <img src="{{ asset('assets/img/no-data.png') }}" alt="No Data Illustration" class="img-fluid mb-4" style="max-width: 400px; height:auto;">
                         </div>
                     `);
                         } else {
-                            // Append the new leaves to the list
                             $.each(response, function(index, item) {
                                 let disetujuiOleh = '';
+                                let waktu = '';
 
-                                // Menggunakan if untuk memeriksa status dan type
                                 if (item.status === 'approved' && item.level === 'staff') {
                                     disetujuiOleh =
                                         `<p class="pt-3"><span class="text-success"><i class="bi bi-check2-circle"></i> Disetujui Oleh: ${item.kadiv.member.nama} (${item.kadiv.member.id_member})</span></p>`;
-                                } else if (item.status === 'approved' && item.level === 'kadiv') {
+                                } else if (item.status === 'approved' && item.level ===
+                                    'kadiv') {
                                     disetujuiOleh =
                                         `<p class="pt-3"><span class="text-success"><i class="bi bi-check2-circle"></i> Disetujui Oleh: ${item.manager.member.nama} (${item.manager.member.id_member})</span></p>`;
-                                } 
+                                }
 
+                                if (item.time_in) {
+                                    waktu =
+                                        `<span><i class="bi bi-alarm-fill me-2 text-danger" style="font-size: 10px;"></i> Perkiraan Jam Masuk ${item.time_in}</span>`;
+                                } else if (item.time_out) {
+                                    waktu =
+                                        `<span><i class="bi bi-alarm-fill me-2 text-danger" style="font-size: 10px;"></i> Jam Pulang Awal ${item.time_out}</span>`;
+                                }
 
                                 $('.list-group').append(`
                             <div class="list-group-item d-flex py-4 mb-2" style="border: 2px solid rgb(76, 75, 75); border-radius:8px;">
@@ -198,8 +198,7 @@
                                             <span><i class="bi bi-bookmark-fill me-2 text-info" style="font-size: 10px;"></i>
                                                 ${item.category}
                                             </span>
-                                            <span><i class="bi bi-alarm-fill me-2 text-danger" style="font-size: 10px;"></i>
-                                                ${item.time}
+                                            ${waktu}
                                         </p>
                                         <p class="pt-3"><span>Dibuat pada: ${moment(item.created_at).format('D MMMM YYYY')}</span></p>
                                         ${disetujuiOleh}
@@ -221,12 +220,11 @@
                 });
             }
 
-            // Call the function to fetch data initially
             fetchLeaves();
 
             $('#submitBtn').on('click', function(e) {
                 e.preventDefault();
-                fetchLeaves(); // Call the same function when the button is clicked
+                fetchLeaves();
             });
         });
     </script>

@@ -45,19 +45,24 @@
                 </div>
 
                 <div class="form-group">
-                    <h6 class="mb-2">Jam Pulang Awal :</h6>
-                    <input class="form-control mb-3" name="time" type="time" value="" required="">
-                </div>
-
-                <div class="form-group">
                     <h6 class="mb-2">Jenis Izin :</h6>
-                    <select class="mb-3 form-control form-select" name="category" required="">
+                    <select class="mb-3 form-control form-select" name="category" id="category" required="">
                         <option value="">Jenis Izin ...</option>
                         <option value="Izin datang terlambat">Izin datang terlambat</option>
                         <option value="Izin Pulang lebih awal">Izin Pulang lebih awal</option>
                         <option value="Izin Tidak Masuk Kerja">Izin Tidak Masuk Kerja</option>
-                        
+
                     </select>
+                </div>
+
+                <div class="form-group" id="timeIn" style="display: none;">
+                    <h6 class="mb-2">Perkiraan Jam Masuk</h6>
+                    <input class="form-control mb-3" name="time_in" type="time" value="">
+                </div>
+
+                <div class="form-group" id="timeOut" style="display: none;">
+                    <h6 class="mb-2">Jam Pulang Awal</h6>
+                    <input class="form-control mb-3" name="time_out" type="time" value="">
                 </div>
 
                 <div class="form-group">
@@ -71,3 +76,72 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const categorySelect = document.getElementById("category");
+            const timeInGroup = document.getElementById("timeIn");
+            const timeOutGroup = document.getElementById("timeOut");
+            const timeInInput = timeInGroup.querySelector("input[name='time_in']");
+            const timeOutInput = timeOutGroup.querySelector("input[name='time_out']");
+            const form = document.querySelector("form");
+
+            categorySelect.addEventListener("change", function() {
+                const selectedCategory = categorySelect.value;
+
+                // Reset tampilan input waktu
+                timeInGroup.style.display = "none";
+                timeOutGroup.style.display = "none";
+                timeInInput.value = "";
+                timeOutInput.value = "";
+
+                // Hapus required dari input waktu
+                timeInInput.required = false;
+                timeOutInput.required = false;
+
+                // Tampilkan input dan tambahkan required berdasarkan jenis izin yang dipilih
+                if (selectedCategory === "Izin datang terlambat") {
+                    timeInGroup.style.display = "block";
+                    timeInInput.required = true;
+                } else if (selectedCategory === "Izin Pulang lebih awal") {
+                    timeOutGroup.style.display = "block";
+                    timeOutInput.required = true;
+                }
+            });
+
+            form.addEventListener("submit", function(event) {
+                const selectedCategory = categorySelect.value;
+                let isValid = true;
+
+                // Cek jika salah satu izin dipilih, pastikan input waktu diisi
+                if (selectedCategory === "Izin datang terlambat" && !timeInInput.value) {
+                    isValid = false;
+                    showErrorToast("Silakan isi Perkiraan Jam Masuk.");
+                } else if (selectedCategory === "Izin Pulang lebih awal" && !timeOutInput.value) {
+                    isValid = false;
+                    showErrorToast("Silakan isi Jam Pulang Awal.");
+                }
+
+                if (!isValid) {
+                    event.preventDefault(); // Mencegah submit form
+                }
+            });
+
+            function showErrorToast(message) {
+                // Buat session untuk pesan error
+                @php
+                    session(['info' => '']);
+                @endphp
+
+                // Perbarui pesan error di toast
+                document.querySelector(".toast .toast-body .d-block").innerText = message;
+
+                // Tampilkan toast
+                const toastElement = document.querySelector('.toast');
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+        });
+    </script>
+@endpush
