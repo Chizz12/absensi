@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Absen;
 use App\Models\Leave;
-use App\Models\Permit;
 use App\Models\Shift;
+use App\Models\Member;
+use App\Models\Permit;
 use Illuminate\Http\Request;
 use Psy\Readline\Hoa\Console;
 use Illuminate\Support\Facades\Log;
@@ -85,12 +86,13 @@ class HomeController extends Controller
 
     public function postAttendance(Request $request)
     {
+        $member = Member::find(auth()->user()->member->id_member);
         // Proses data dari canvas (base64 ke file)
         if ($request->has('webcam')) {
             $imageData = $request->input('webcam');
             $imageData = str_replace('data:image/png;base64,', '', $imageData);  // Menghapus header base64
             $imageData = str_replace(' ', '+', $imageData);
-            $imageName = 'webcam_' . time() . '.png';  // Membuat nama file
+            $imageName = 'webcam_' . $member->id_member . '-' . now()->format('d-M-Y') . '.png';
             File::put(public_path('webcam/') . $imageName, base64_decode($imageData)); // Menyimpan file gambar
 
         }
