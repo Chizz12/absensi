@@ -92,7 +92,7 @@ class HomeController extends Controller
             $imageData = $request->input('webcam');
             $imageData = str_replace('data:image/png;base64,', '', $imageData);  // Menghapus header base64
             $imageData = str_replace(' ', '+', $imageData);
-            $imageName = 'webcam_' . $member->id_member . '-' . now()->format('d-M-Y') . '.png';
+            $imageName = 'webcam_' . $member->id_member . '-' . $request->type. '-' . now()->format('d-M-Y') . '.png';
             File::put(public_path('webcam/') . $imageName, base64_decode($imageData)); // Menyimpan file gambar
 
         }
