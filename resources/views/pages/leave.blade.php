@@ -165,6 +165,15 @@
                         } else {
                             // Append the new leaves to the list
                             $.each(response, function(index, item) {
+                                let disetujuiOleh = '';
+
+                                if (item.status === 'approved') {
+                                    disetujuiOleh =
+                                        `<p class="pt-3"><span class="text-success"><i class="bi bi-check2-circle"></i> Disetujui Oleh: ${item.kadiv.member.nama} (${item.kadiv.member.id_member}) dan ${item.manager.member.nama} (${item.manager.member.id_member})</span></p>`;
+                                } else {
+                                    disetujuiOleh = '';
+                                }
+
                                 $('.list-group').append(`
                             <div class="list-group-item d-flex py-4 mb-2" style="border: 2px solid rgb(76, 75, 75); border-radius:8px;">
                                 <span class="noti-icon me-3 p-3">
@@ -183,6 +192,7 @@
                                             </span>
                                         </p>
                                         <p class="pt-3"><span>Dibuat pada: ${moment(item.created_at).format('D MMMM YYYY')}</span></p>
+                                        ${disetujuiOleh}
                                     </div>
                                     <a class="btn btn-sm btn-${item.status == 'approved' ? 'success' : item.status == 'rejected' ? 'danger' : 'warning'} text-white text-capitalize" style="margin-left: auto;" data-bs-toggle="modal" data-bs-target="#reasonModal" data-reason="${item.reason}">
                                         ${item.status}

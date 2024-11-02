@@ -92,7 +92,7 @@ class HomeController extends Controller
             $imageData = $request->input('webcam');
             $imageData = str_replace('data:image/png;base64,', '', $imageData);  // Menghapus header base64
             $imageData = str_replace(' ', '+', $imageData);
-            $imageName = 'webcam_' . $member->id_member . '-' . $request->type. '-' . now()->format('d-M-Y') . '.png';
+            $imageName = 'webcam_' . $member->id_member . '-' . $request->type . '-' . now()->format('d-M-Y') . '.png';
             File::put(public_path('webcam/') . $imageName, base64_decode($imageData)); // Menyimpan file gambar
 
         }
@@ -141,7 +141,7 @@ class HomeController extends Controller
     {
         if ($request->ajax()) {
             $query = Leave::where('user_id', auth()->user()->id_user)
-                ->with(['user.member', 'user.jabatan', 'user.divisi']);
+                ->with(['user.member', 'user.jabatan', 'user.divisi', 'kadiv.member', 'manager.member']);
 
             // Filter berdasarkan tanggal mulai
             if ($request->filled('from_date')) {
@@ -180,6 +180,11 @@ class HomeController extends Controller
         $leave->start_date = $request->from_date;
         $leave->end_date = $request->to_date;
         $leave->reason = $request->description;
+        if (auth()->user()->jabatan_id >= 2 && auth()->user()->jabatan_id <= 9) {
+            $leave->approved_by_kadiv = auth()->user()->id_user;
+            $leave->approved_by_manager = auth()->user()->id_user;
+            $leave->status = 'approved';
+        }
         $leave->save();
 
         return redirect()->route('leave')->with('info', 'Pengajuan cuti berhasil.');
