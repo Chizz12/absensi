@@ -170,15 +170,36 @@ class HomeController extends Controller
 
     public function addLeave()
     {
-        return view('pages.add-leave');
+        $jumlahCuti = Leave::where('user_id', auth()->user()->id_user)
+            ->whereYear('created_at', now()->format('Y'))
+            ->where('status', 'approved')
+            ->sum('day');
+        
+        $sisaCuti = 12 - $jumlahCuti;
+
+        return view('pages.add-leave', compact('sisaCuti'));
     }
 
     public function postLeave(Request $request)
     {
+        $jumlahCuti = Leave::where('user_id', auth()->user()->id_user)
+            ->whereYear('created_at', now()->format('Y'))
+            ->where('status', 'approved')
+            ->sum('day');
+        
+        $day = Carbon::parse($request->from_date)->startOfDay()->diffInDays(Carbon::parse($request->to_date)->startOfDay()) + 1;
+
+        $jumlahCuti += $day;
+
+        if ($jumlahCuti > 12) {
+            return redirect()->route('leave')->with('info', 'Sisa cuti Anda sudah habis.');
+        }
+
         $leave = new Leave();
         $leave->user_id = auth()->user()->id_user;
         $leave->start_date = $request->from_date;
         $leave->end_date = $request->to_date;
+        $leave->day = $day;
         $leave->reason = $request->description;
         if (auth()->user()->jabatan_id >= 2 && auth()->user()->jabatan_id <= 9) {
             $leave->approved_by_kadiv = auth()->user()->id_user;

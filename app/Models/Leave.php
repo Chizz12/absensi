@@ -17,6 +17,7 @@ class Leave extends Model
         'user_id',
         'start_date',
         'end_date',
+        'day',
         'reason',
         'status',
         'approved_by_kadiv',

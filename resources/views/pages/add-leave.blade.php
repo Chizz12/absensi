@@ -68,6 +68,12 @@
                         required=""></textarea>
                 </div>
 
+                <div class="form-group">
+                    <h6 class="mb-2">Sisa Cuti :</h6>
+                    <input class="form-control mb-3" name="sisa_cuti" type="text" readonly
+                        value="{{ $sisaCuti }} Hari">
+                </div>
+
                 <button class="btn btn-success btn-lg w-100" type="submit">Submit</button>
             </form>
         </div>
