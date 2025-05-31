@@ -10,6 +10,8 @@ use App\Models\Member;
 use App\Models\Permit;
 use Illuminate\Http\Request;
 use Psy\Readline\Hoa\Console;
+use App\Models\Tugas;
+use App\Models\TimerTugas as TimerTugasModel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 
@@ -117,8 +119,63 @@ class HomeController extends Controller
             } else {
                 $status = 'on_time'; // Jika menit sama atau lebih awal
             }
-        }
 
+            $today = Carbon::today();
+            $userId = auth()->user()->id_user;
+
+            // Ambil semua timer tugas yang aktif
+            $timers = TimerTugasModel::where('status', 'aktif')->get();
+
+            foreach ($timers as $timer) {
+                $tugas = $timer->tugas; // Asumsikan relasi 'tugas' sudah didefinisikan
+
+                if (!$tugas || $tugas->user_id != $userId) {
+                    continue; // Skip jika tidak ada tugas atau tugas bukan milik user yang sedang absen
+                }
+
+                $buatTugas = false;
+
+                switch ($timer->tipe) {
+                    case 'perhari':
+                        $buatTugas = true;
+                        break;
+
+                    case 'perminggu':
+                        // Cek jika hari ini sama dengan hari dari start_date
+                        $startDay = Carbon::parse($tugas->start_date)->dayOfWeek;
+                        if ($today->dayOfWeek === $startDay) {
+                            $buatTugas = true;
+                        }
+                        break;
+
+                    case 'perbulan':
+                        // Cek jika hari ini sama dengan tanggal dari start_date
+                        $startDate = Carbon::parse($tugas->start_date);
+                        if ($today->day === $startDate->day) {
+                            $buatTugas = true;
+                        }
+                        break;
+                }
+
+                if ($buatTugas) {
+                    Tugas::create([
+                        'category_tugas_id' => $tugas->category_tugas_id,
+                        'project_id' => $tugas->project_id,
+                        'divisi_id' => $tugas->divisi_id,
+                        'user_id' => $tugas->user_id,
+                        'nama' => $tugas->nama,
+                        'start_date' => $today,
+                        'deadline' => $today,
+                        'link' => $tugas->link,
+                        'prioritas' => $tugas->prioritas,
+                        'approved_by' => $tugas->approved_by,
+                        'approved_at' => $tugas->approved_at,
+                        'status' => 'belum_dikerjakan',
+                        'berita' => $tugas->berita,
+                    ]);
+                }
+            }
+        }
 
         $absen = new Absen();
         $absen->user_id = auth()->user()->id_user;
@@ -174,7 +231,7 @@ class HomeController extends Controller
             ->whereYear('created_at', now()->format('Y'))
             ->where('status', 'approved')
             ->sum('day');
-        
+
         $sisaCuti = 12 - $jumlahCuti;
 
         return view('pages.add-leave', compact('sisaCuti'));
@@ -186,7 +243,7 @@ class HomeController extends Controller
             ->whereYear('created_at', now()->format('Y'))
             ->where('status', 'approved')
             ->sum('day');
-        
+
         $day = Carbon::parse($request->from_date)->startOfDay()->diffInDays(Carbon::parse($request->to_date)->startOfDay()) + 1;
 
         $jumlahCuti += $day;
