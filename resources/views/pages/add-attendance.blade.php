@@ -116,13 +116,37 @@
     </div>
     <div class="modal show" id="selfieModal" tabindex="-1" aria-labelledby="selfieModalLabel" data-bs-backdrop="static"
         aria-modal="true" role="dialog" style="padding-right: 17px; display: none;">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="selfieModalLabel">Take a Selfie</h5>
                 </div>
                 <div class="modal-body text-center">
                     <video id="selfieVideo" width="100%" height="auto" autoplay="" class="video"></video>
+                    <!-- Tambahan Filter -->
+                    <div class="mt-3 text-start">
+                        <label for="filterSelector">Pilih Filter Cepat:</label>
+                        <select id="filterSelector" class="form-select">
+                            <option value="none">Normal</option>
+                            <option value="brightness(1.4)">Lebih Cerah</option>
+                            <option value="contrast(1.5)">Kontras Tinggi</option>
+                            <option value="grayscale(1)">Hitam Putih</option>
+                            <option value="sepia(1)">Efek Foto Lama</option>
+                            <option value="blur(2px)">Kabur</option>
+                            <option value="saturate(2)">Warna Pekat</option>
+                            <option value="brightness(1.3) contrast(1.3)">Cerah + Kontras</option>
+                        </select>
+
+                        <div class="mt-3">
+                            <label for="brightnessRange" class="form-label">Atur Kecerahan:</label>
+                            <input type="range" min="0.5" max="2" step="0.1" value="1"
+                                id="brightnessRange" class="form-range">
+
+                            <label for="contrastRange" class="form-label mt-2">Atur Kontras:</label>
+                            <input type="range" min="0.5" max="2" step="0.1" value="1"
+                                id="contrastRange" class="form-range">
+                        </div>
+                    </div>
                     <br><br><br>
                     <button id="captureButton" class="btn btn-lg btn-success mt-3 mb-3">Jepret</button>
                 </div>
@@ -143,6 +167,35 @@
         // const ktp = document.getElementById('ktp');
         // const btnRepeat = document.getElementById("btnRepeat");
         const coverMap = document.getElementById("map");
+        const filterSelector = document.getElementById("filterSelector");
+        const brightnessRange = document.getElementById("brightnessRange");
+        const contrastRange = document.getElementById("contrastRange");
+
+        let customFilter = ""; // untuk simpan custom filter jika user ubah range
+
+        function applyFilter() {
+            if (customFilter) {
+                video.style.filter = customFilter;
+            } else {
+                video.style.filter = filterSelector.value;
+            }
+        }
+
+        // Saat select diubah
+        filterSelector.addEventListener("change", () => {
+            customFilter = ""; // reset custom jika pakai select
+            applyFilter();
+        });
+
+        // Saat range diubah
+        [brightnessRange, contrastRange].forEach(input => {
+            input.addEventListener("input", () => {
+                const brightness = brightnessRange.value;
+                const contrast = contrastRange.value;
+                customFilter = `brightness(${brightness}) contrast(${contrast})`;
+                applyFilter();
+            });
+        });
 
         function initializeWebcam() {
             const constraints = {
@@ -181,6 +234,7 @@
             canvas.height = video.videoHeight;
 
             const context = canvas.getContext('2d');
+            context.filter = video.style.filter || 'none';
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             canvas.style.display = 'block';
