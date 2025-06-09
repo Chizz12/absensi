@@ -148,6 +148,7 @@
                         </div>
                     </div>
                     <button id="captureButton" class="btn btn-lg btn-success mt-3 mb-3">Jepret</button>
+                    <br><br><br>
                 </div>
             </div>
         </div>
