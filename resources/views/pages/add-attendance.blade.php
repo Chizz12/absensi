@@ -147,7 +147,6 @@
                                 id="contrastRange" class="form-range">
                         </div>
                     </div>
-                    <br><br><br>
                     <button id="captureButton" class="btn btn-lg btn-success mt-3 mb-3">Jepret</button>
                 </div>
             </div>
