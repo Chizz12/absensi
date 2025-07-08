@@ -296,6 +296,11 @@
 
         $(document).ready(function() {
             $('#submitBtn').click(function(event) {
+                event.preventDefault(); // Cegah submit default
+
+                var btn = $(this);
+                btn.prop('disabled', true).text('Memproses...');
+
                 $('.overlay').show();
 
                 var lat = $('#latitude').val();
@@ -330,6 +335,7 @@
                         success: function(response) {
                             if (response.success) {
                                 $('.overlay').hide();
+                                btn.text('Berhasil!');
 
                                 // Tampilkan alert custom
                                 const alertHtml = `

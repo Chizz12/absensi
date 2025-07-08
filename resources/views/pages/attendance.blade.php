@@ -45,9 +45,16 @@
                 @endphp
                 @forelse ($attendances as $item)
                     <div class="list-group-item d-flex flex-column flex-md-row align-items-center p-3 mb-3 rounded">
-                        <img src="{{ asset('webcam/' . $item->foto) }}" alt="Foto Karyawan" class="rounded mb-3 mb-md-0"
-                            style="width: 200px; height: auto; object-fit: cover; margin-right: 15px; background-repeat: no-repeat;"
-                            id="foto">
+                        @if ($item->foto)
+                            <img src="{{ Storage::disk('media')->url('tms/absen/' . $item->foto) }}" alt="Foto Karyawan"
+                                class="rounded mb-3 mb-md-0"
+                                style="width: 200px; height: auto; object-fit: cover; margin-right: 15px;" id="foto">
+                        @else
+                            <div
+                                style="width: 200px; height: 200px; background-color: #eee; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem;">
+                                <span style="color: #888;">Belum ada foto</span>
+                            </div>
+                        @endif
                         <div class="noti-info flex-grow-1">
                             <div class="d-flex justify-content-between">
                                 <h5 class="mb-0 fw-bold">

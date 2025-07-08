@@ -6,14 +6,15 @@ use Carbon\Carbon;
 use App\Models\Absen;
 use App\Models\Leave;
 use App\Models\Shift;
+use App\Models\Tugas;
 use App\Models\Member;
 use App\Models\Permit;
 use Illuminate\Http\Request;
 use Psy\Readline\Hoa\Console;
-use App\Models\Tugas;
-use App\Models\TimerTugas as TimerTugasModel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use App\Models\TimerTugas as TimerTugasModel;
 
 class HomeController extends Controller
 {
@@ -92,11 +93,16 @@ class HomeController extends Controller
         // Proses data dari canvas (base64 ke file)
         if ($request->has('webcam')) {
             $imageData = $request->input('webcam');
-            $imageData = str_replace('data:image/png;base64,', '', $imageData);  // Menghapus header base64
-            $imageData = str_replace(' ', '+', $imageData);
-            $imageName = 'webcam_' . $member->id_member . '-' . $request->type. '-' . now()->format('d-M-Y') . '.png';
-            File::put(public_path('../../../public_html/absen/storage/selfie') . $imageName, base64_decode($imageData)); // Menyimpan file gambar
 
+            // Bersihkan string base64
+            $imageData = str_replace('data:image/png;base64,', '', $imageData);
+            $imageData = str_replace(' ', '+', $imageData);
+
+            // Buat nama file
+            $imageName = 'absen_' . $member->id_member . '-' . rand(10000, 99999) . '-' . now()->format('d-M-Y') . '.png';
+
+            // Simpan file ke storage
+            Storage::disk('media')->put('tms/absen/' . $imageName, base64_decode($imageData));
         }
 
         $shift = Shift::find($request->shift);

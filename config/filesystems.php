@@ -56,6 +56,13 @@ return [
             'throw' => false,
         ],
 
+        'media' => [
+            'driver' => 'local',
+            'root' => '/home/tms/public_html/media',
+            'url' => env('MEDIA_URL', 'https://media.tms.web.id'),
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*
